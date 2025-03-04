@@ -10,7 +10,7 @@ class WebScraper:
         self.recipients = recipients
         self.cache_file = 'last_site_state.txt'
     
-    def get_site_content(self, selector: str) -> str | None:
+    def get_site_content(self, selector: str) -> str:
         try:
             response = requests.get(self.url)
             response.raise_for_status()
@@ -18,11 +18,11 @@ class WebScraper:
             soup = BeautifulSoup(response.text, 'html.parser')
             
             element = soup.select_one(selector)
-            return element.get_text() if element else None
+            return element.get_text() if element else ''
         
         except requests.RequestException as e:
             print(f"Erro ao acessar o site: {e}")
-            return None
+            return ''
     
     def calculate_content_hash(self, content):
         return hashlib.md5(content.encode('utf-8')).hexdigest()
