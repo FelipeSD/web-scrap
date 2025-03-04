@@ -17,8 +17,8 @@ env:
   SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
   SENDER_PASSWORD: ${{ secrets.SENDER_PASSWORD }}
   EMAIL_RECIPIENTS: ${{ secrets.EMAIL_RECIPIENTS }}
-  # URL para scraping
   SCRAPE_URL: ${{ secrets.SCRAPE_URL }}
+  SCRAPE_SELECTOR: ${{ secrets.SCRAPE_SELECTOR }}
 
 jobs:
   web-scraper:
