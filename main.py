@@ -10,14 +10,15 @@ class WebScraper:
         self.recipients = recipients
         self.cache_file = 'last_site_state.txt'
     
-    def get_site_content(self):
+    def get_site_content(self, selector: str) -> str | None:
         try:
             response = requests.get(self.url)
             response.raise_for_status()
             
             soup = BeautifulSoup(response.text, 'html.parser')
             
-            return soup.get_text()
+            element = soup.select_one(selector)
+            return element.get_text() if element else None
         
         except requests.RequestException as e:
             print(f"Erro ao acessar o site: {e}")
@@ -57,8 +58,8 @@ class WebScraper:
             f.write(current_hash)
     
     def check_for_updates(self):
-        current_content = self.get_site_content()
-        
+        selector = os.getenv('SCRAPE_SELECTOR', '')
+        current_content = self.get_site_content(selector)
         if not current_content:
             print("Não foi possível obter o conteúdo do site.")
             return
@@ -69,13 +70,18 @@ class WebScraper:
         if last_hash:
             if current_hash != last_hash:
                 self.send_email_notification(
-                    "Conteúdo do site foi atualizado!"
+                    f"""Conteúdo do site foi atualizado!
+
+                    {current_content}
+                    """
                 )
             else:
                 self.send_email_notification(
-                    """
+                    f"""
                     Conteúdo foi verificado, mas não houve mudanças!
 
+                    {current_content}
+                    
                     Continuaremos monitorando.
                     """
                 )
