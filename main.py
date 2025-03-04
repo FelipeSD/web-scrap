@@ -76,7 +76,7 @@ class WebScraper:
             f.write(current_hash)
 
 def main():
-    recipients = os.getenv('EMAIL_RECIPIENTS').split(',')
+    recipients = os.getenv('EMAIL_RECIPIENTS', '').split(',')
     scraper = WebScraper(os.getenv('SCRAPE_URL'), recipients)
     scraper.check_for_updates()
 
