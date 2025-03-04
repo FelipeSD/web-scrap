@@ -8,7 +8,7 @@ class WebScraper:
     def __init__(self, url, recipients):
         self.url = url
         self.recipients = recipients
-        self.state_file = 'last_site_state.txt'
+        self.cache_file = 'last_site_state.txt'
     
     def get_site_content(self):
         try:
@@ -46,6 +46,16 @@ class WebScraper:
         except Exception as e:
             print(f"Erro ao enviar email: {e}")
     
+    def load_last_hash(self):
+        if os.path.exists(self.cache_file):
+            with open(self.cache_file, 'r') as f:
+                return f.read().strip()
+        return None
+    
+    def save_current_hash(self, current_hash):
+        with open(self.cache_file, 'w') as f:
+            f.write(current_hash)
+    
     def check_for_updates(self):
         current_content = self.get_site_content()
         
@@ -54,11 +64,9 @@ class WebScraper:
             return
         
         current_hash = self.calculate_content_hash(current_content)
+        last_hash = self.load_last_hash()
         
-        if os.path.exists(self.state_file):
-            with open(self.state_file, 'r') as f:
-                last_hash = f.read().strip()
-            
+        if last_hash:
             if current_hash != last_hash:
                 self.send_email_notification(
                     "Conteúdo do site foi atualizado!"
@@ -71,9 +79,10 @@ class WebScraper:
                     Continuaremos monitorando.
                     """
                 )
-
-        with open(self.state_file, 'w') as f:
-            f.write(current_hash)
+        else:
+            print("Primeira execução. Nenhuma hash anterior encontrada.")
+        
+        self.save_current_hash(current_hash)
 
 def main():
     recipients = os.getenv('EMAIL_RECIPIENTS', '').split(',')
