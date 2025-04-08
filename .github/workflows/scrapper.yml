@@ -3,8 +3,8 @@ name: Web Scraper Scheduler
 # Controla quando a Action será executada
 on:
   # Executa a cada hora
-  schedule:
-    - cron: '0 18 * * *'  # Minuto 0 de cada hora
+  # schedule:
+  #   - cron: '0 18 * * *'  # Minuto 0 de cada hora
   
   # Permite executar manualmente
   workflow_dispatch:
